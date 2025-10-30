@@ -49,3 +49,5 @@ app.*.map.json
 /macos
 /android
 /linux
+/test
+/web
