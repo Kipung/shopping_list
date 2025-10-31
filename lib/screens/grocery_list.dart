@@ -17,6 +17,7 @@ class GroceryList extends StatefulWidget {
 
 class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
+  List<GroceryItem> _filteredItems = [];
   var _isLoading = true;
   String? _error;
 
@@ -64,6 +65,7 @@ class _GroceryListState extends State<GroceryList> {
       }
       setState(() {
         _groceryItems = loadedItems;
+        _filteredItems = loadedItems;
         _isLoading = false;
       });
     } catch (error) {
@@ -116,23 +118,23 @@ class _GroceryListState extends State<GroceryList> {
       content = const Center(child: CircularProgressIndicator());
     }
 
-    if (_groceryItems.isNotEmpty) {
+    if (_filteredItems.isNotEmpty) {
       content = ListView.builder(
-        itemCount: _groceryItems.length,
+        itemCount: _filteredItems.length,
         itemBuilder: (ctx, index) => Dismissible(
           onDismissed: (direction) {
-            _removeItem(_groceryItems[index]);
+            _removeItem(_filteredItems[index]);
           },
-          key: ValueKey(_groceryItems[index].id),
+          key: ValueKey(_filteredItems[index].id),
           child: ListTile(
-            title: Text(_groceryItems[index].name),
+            title: Text(_filteredItems[index].name),
             leading: Container(
               width: 24,
               height: 24,
-              color: _groceryItems[index].category.color,
+              color: _filteredItems[index].category.color,
             ),
             trailing: Text(
-              _groceryItems[index].quantity.toString(),
+              _filteredItems[index].quantity.toString(),
             ),
           ),
         ),
@@ -153,7 +155,28 @@ class _GroceryListState extends State<GroceryList> {
           ),
         ],
       ),
-      body: content,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (query) {
+                setState(() {
+                  _filteredItems = _groceryItems
+                      .where((item) =>
+                          item.name.toLowerCase().contains(query.toLowerCase()))
+                      .toList();
+                });
+              },
+            ),
+          ),
+          Expanded(child: content),
+        ],
+      ),
     );
   }
 }
