@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
-import 'package:shopping_list/models/category.dart';
 
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
+import 'package:shopping_list/screens/recycle_bin.dart';
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -18,6 +18,7 @@ class GroceryList extends StatefulWidget {
 class _GroceryListState extends State<GroceryList> {
   List<GroceryItem> _groceryItems = [];
   List<GroceryItem> _filteredItems = [];
+  List<GroceryItem> _deletedItems = [];
   var _isLoading = true;
   String? _error;
 
@@ -88,13 +89,16 @@ class _GroceryListState extends State<GroceryList> {
 
     setState(() {
       _groceryItems.add(newItem);
+      _filteredItems = List.from(_groceryItems);
     });
   }
 
   void _removeItem(GroceryItem item) async {
-    final index = _groceryItems.indexOf(item);
     setState(() {
-      _groceryItems.remove(item);
+      _groceryItems.removeWhere((g) => g.id == item.id);
+      _filteredItems.removeWhere((g) => g.id == item.id);
+
+      _deletedItems.add(item);
     });
 
     final url = Uri.https('proj-315a8-default-rtdb.firebaseio.com',
@@ -105,9 +109,33 @@ class _GroceryListState extends State<GroceryList> {
     if (response.statusCode >= 400) {
       // Optional: Show error message
       setState(() {
-        _groceryItems.insert(index, item);
+        _groceryItems.add(item);
+        _filteredItems = List.from(_groceryItems);
+        _deletedItems.removeWhere((g) => g.id == item.id);
       });
     }
+  }
+
+  void _restoreItem(GroceryItem item) {
+    setState(() {
+      // back to main list
+      _groceryItems.add(item);
+      _filteredItems = List.from(_groceryItems);
+
+      // remove from bin
+      _deletedItems.removeWhere((g) => g.id == item.id);
+
+      // push back to Firebase
+      final url = Uri.https('proj-315a8-default-rtdb.firebaseio.com',
+          'shopping-list/${item.id}.json');
+
+      http.put(url,
+          body: json.encode({
+            'name': item.name,
+            'quantity': item.quantity,
+            'category': item.category.title,
+          }));
+    });
   }
 
   @override
@@ -156,6 +184,7 @@ class _GroceryListState extends State<GroceryList> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -175,6 +204,31 @@ class _GroceryListState extends State<GroceryList> {
             ),
           ),
           Expanded(child: content),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 30, 28, 40),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => RecycleBin(
+                          deletedItems: _deletedItems,
+                          onRestore: _restoreItem,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
