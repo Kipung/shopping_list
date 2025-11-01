@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
-import 'package:shopping_list/models/category.dart';
 
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
+import 'package:shopping_list/screens/settings.dart';
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -152,6 +152,23 @@ class _GroceryListState extends State<GroceryList> {
             icon: const Icon(Icons.add),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const DrawerHeader(child: SizedBox.shrink()),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed(SettingsScreen.routeName);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: content,
     );
