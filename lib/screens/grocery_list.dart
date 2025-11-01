@@ -7,6 +7,7 @@ import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 import 'package:shopping_list/screens/settings.dart';
+import 'package:shopping_list/screens/profile.dart';
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -158,6 +159,14 @@ class _GroceryListState extends State<GroceryList> {
           child: Column(
             children: [
               const DrawerHeader(child: SizedBox.shrink()),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed(ProfileScreen.routeName);
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.settings),
                 title: const Text('Settings'),
