@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:shopping_list/services/settings_service.dart';
 
@@ -9,51 +8,7 @@ class SettingsScreen extends StatelessWidget {
 
   const SettingsScreen({super.key});
 
-  Future<void> _confirmAndClear(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Clear all items?'),
-        content: const Text(
-            'This will permanently delete all items from the remote database.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Clear', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    final url = Uri.https(
-      'proj-315a8-default-rtdb.firebaseio.com',
-      'shopping-list.json',
-    );
-
-    try {
-      final response = await http.delete(url);
-      if (response.statusCode >= 400) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to clear remote items.')),
-        );
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All items cleared.')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error while clearing items.')),
-      );
-    }
-  }
+  // Clear-all feature removed per user request.
 
   @override
   Widget build(BuildContext context) {
@@ -83,35 +38,9 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) => settings.setSeed(v),
           ),
 
-          // Placeholder for a future setting
-          ListTile(
-            leading: const Icon(Icons.settings_backup_restore),
-            title: const Text('Another setting'),
-            subtitle: const Text('Space reserved for a future toggle'),
-            trailing: ElevatedButton(
-              onPressed: () {
-                // TODO: implement action
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Not implemented yet')),
-                );
-              },
-              child: const Text('Action'),
-            ),
-          ),
+          // No color strength slider — accent color uses full strength.
 
           const Divider(),
-
-          ListTile(
-            leading: const Icon(Icons.delete_forever),
-            title: const Text('Clear saved items (remote)'),
-            subtitle:
-                const Text('Deletes all items from Firebase Realtime DB'),
-            trailing: TextButton(
-              onPressed: () => _confirmAndClear(context),
-              child: const Text('Clear', style: TextStyle(color: Colors.red)),
-            ),
-          ),
-
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('About'),
@@ -119,7 +48,7 @@ class SettingsScreen extends StatelessWidget {
               context: context,
               applicationName: 'Shopping List',
               applicationVersion: '1.0.0',
-              children: const [Text('A simple shopping list example app.')],
+              children: const [Text('A simple app for shopping lists.')],
             ),
           ),
         ],
@@ -127,6 +56,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+
 class _ThemeColorRadio extends StatelessWidget {
   final int groupValue;
   final ValueChanged<int> onChanged;
@@ -136,7 +66,13 @@ class _ThemeColorRadio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final options = <Map<String, int>>[
-      {'Cyan': 0xFF93E5FA},
+      {'Cyan': 0xFF00BCD4},
+      {'Blue': 0xFF2196F3},
+      {'Purple': 0xFF9C27B0},
+      {'Pink': 0xFFE91E63},
+      {'Red': 0xFFF44336},
+      {'Orange': 0xFFFF9800},
+      {'Green': 0xFF4CAF50},
       {'Teal': 0xFF4DB6AC},
       {'Amber': 0xFFFFC107},
     ];

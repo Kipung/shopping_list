@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsService extends ChangeNotifier {
   static const _darkKey = 'theme_is_dark';
   static const _seedKey = 'theme_seed_value';
+  static const _blendKey = 'theme_seed_blend';
 
   bool _isDark = false;
   bool get isDark => _isDark;
@@ -15,6 +16,13 @@ class SettingsService extends ChangeNotifier {
   int get seedValue => _seedValue;
   Color get seedColor => Color(_seedValue);
 
+  // Blend amount: 0.0 = original color, 1.0 = fully white (muted)
+  double _blendAmount = 0.0;
+  double get blendAmount => _blendAmount;
+
+  // Returns the seed color blended toward white by [_blendAmount]
+  Color get adjustedSeedColor => Color.lerp(seedColor, Colors.white, _blendAmount) ?? seedColor;
+  
   
   SettingsService();
 
@@ -23,6 +31,7 @@ class SettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _isDark = prefs.getBool(_darkKey) ?? false;
     _seedValue = prefs.getInt(_seedKey) ?? _seedValue;
+    _blendAmount = prefs.getDouble(_blendKey) ?? _blendAmount;
     notifyListeners();
   }
 
@@ -39,6 +48,13 @@ class SettingsService extends ChangeNotifier {
     _seedValue = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_seedKey, value);
+    notifyListeners();
+  }
+
+  Future<void> setBlend(double value) async {
+    _blendAmount = value.clamp(0.0, 1.0);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_blendKey, _blendAmount);
     notifyListeners();
   }
 }

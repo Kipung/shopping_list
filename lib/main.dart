@@ -35,14 +35,14 @@ class MyApp extends StatelessWidget {
       themeMode: settings.themeMode,
       theme: ThemeData.light().copyWith(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: settings.seedColor,
+          seedColor: settings.adjustedSeedColor,
           brightness: Brightness.light,
         ),
         scaffoldBackgroundColor: Colors.white,
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: settings.seedColor,
+          seedColor: settings.adjustedSeedColor,
           brightness: Brightness.dark,
           surface: const Color.fromARGB(255, 42, 51, 59),
         ),
