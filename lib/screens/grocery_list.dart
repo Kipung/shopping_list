@@ -10,6 +10,9 @@ import 'package:shopping_list/authentication/auth_service.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 
+import 'package:shopping_list/screens/profile.dart';
+import 'package:shopping_list/screens/settings.dart';
+
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
 
@@ -147,6 +150,8 @@ class _GroceryListState extends State<GroceryList> {
 
     return Scaffold(
       appBar: AppBar(
+        // hamburger menu icon
+
         title: const Text('Your Groceries'),
         actions: [
           IconButton(
@@ -154,6 +159,31 @@ class _GroceryListState extends State<GroceryList> {
             icon: const Icon(Icons.add),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const DrawerHeader(child: SizedBox.shrink()),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed(ProfileScreen.routeName);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed(SettingsScreen.routeName);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: content,
       floatingActionButton: _logout(context),
