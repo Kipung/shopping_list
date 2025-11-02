@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'package:shopping_list/widgets/grocery_list.dart';
+import 'package:shopping_list/screens/grocery_list.dart';
 
-void main() {
+// Firebase imports
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+
+import 'package:shopping_list/authentication/login.dart';
+import 'package:shopping_list/authentication/signup.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -23,7 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color.fromARGB(255, 50, 58, 60),
       ),
-      home: const GroceryList(),
+      home: Login(),
     );
   }
 }

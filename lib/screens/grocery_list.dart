@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 
+import 'package:shopping_list/authentication/auth_service.dart';
+
 import 'package:shopping_list/models/grocery_item.dart';
 import 'package:shopping_list/widgets/new_item.dart';
 
@@ -154,6 +156,24 @@ class _GroceryListState extends State<GroceryList> {
         ],
       ),
       body: content,
+      floatingActionButton: _logout(context),
+    );
+  }
+
+  Widget _logout(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xff0D6EFD),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        minimumSize: const Size(double.infinity, 60),
+        elevation: 0,
+      ),
+      onPressed: () async {
+        await AuthService().signout(context: context);
+      },
+      child: const Text("Sign Out"),
     );
   }
 }
